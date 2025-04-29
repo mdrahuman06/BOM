@@ -1,0 +1,60 @@
+
+{% extends 'bom_app/base.html' %}
+
+{% load static %}
+{% load bom_extras %}
+
+{% block title %}{{ product.name }} - Product Details.html{% endblock %}
+
+{% block content %}
+<h1>{{ product.name }}</h1>
+<p>{{ product.description }}</p>
+
+<h3>Bill of Materials</h3>
+
+<button class="btn" onclick="window.print()">🖨️ Print</button>
+
+<table border="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+            <th>Price (₹ unit price)</th>
+            <th>Total (₹)</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in bom_items %}
+        <tr>
+            <td>{{ item.item_name }}</td>
+            {% comment %} <td>{{ item.get_item_type_display }}</td> {% endcomment %}
+            <td>
+                {{ item.get_item_type_display }}
+                {% if item.item_type == 'other' and item.custom_item_type %}
+                    ({{ item.custom_item_type }})
+                {% endif %}
+            </td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.quantity|multiply:item.price }}</td>
+            <td>{{ item.notes|default:"None" }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="5"><strong>Grand Total</strong></td>
+            <td colspan="2">
+                ₹ {{ bom_items|sum_bom_total }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<a href="{% url 'add_bom_item' product.pk %}" class="btn">➕ Add BOM Item</a>
+<a href="{% url 'product_list' %}" class="btn secondary">🔙 Back to Product List</a>
+
+
+{% endblock %}

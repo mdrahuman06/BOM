@@ -1,0 +1,53 @@
+{% extends 'bom_app/base.html' %}
+{% load static %}
+{% load bom_extras %}
+
+{% block title %}Product List - BOM System{% endblock %}
+
+{% block content %}
+<h1 style="display: flex; justify-content: space-between; align-items: center;">
+    Product List
+    <form method="POST" action="{% url 'calculate_selected' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn">🧮 Calculate</button>
+</h1>
+
+{% if products %}
+    <table>
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Total Cost</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td><input type="checkbox" name="selected_products" value="{{ product.id }}"></td>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>₹ {{ product.total_cost }}</td>
+                {% comment %} <td>
+                    {% with total=product.bom_items|sum_bom_total %}
+                        ₹{{ total }}
+                    {% endwith %}
+                </td> {% endcomment %}
+                <td><a href="{% url 'product_detail' pk=product.pk %}">View</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </form>
+{% else %}
+    <p>No products found. Click below to add a new one!</p>
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+        <div style="font-size: 2rem;">👉</div>
+        <a href="{% url 'add_product' %}" class="btn">Add Product</a>
+    </div>
+{% endif %}
+{% endblock %}

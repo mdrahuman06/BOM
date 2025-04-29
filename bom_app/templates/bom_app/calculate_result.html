@@ -1,0 +1,100 @@
+{% extends 'bom_app/base.html' %}
+{% load custom_filters %}
+
+{% block title %}Calculation Results{% endblock %}
+
+{% block content %}
+<button class="btn" onclick="window.print()">🖨️ Print</button>
+
+<h2>📦 Calculation Result</h2>
+
+{% for entry in products_with_totals %}
+    <h3>🧾 The Grand Total of {{ entry.product.name }}: ₹{{ entry.product_total }}</h3>
+
+    <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead style="background-color: #f0f0f0;">
+            <tr>
+                <th>Item</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in entry.bom_items %}
+            <tr>
+                <td>{{ item.item_name }}</td>
+                <td>
+                    {{ item.get_item_type_display }}
+                    {% if item.item_type == 'other' and item.custom_item_type %}
+                        ({{ item.custom_item_type }})
+                    {% endif %}
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>₹{{ item.quantity|mul:item.price }}</td>
+            </tr>
+            {% endfor %}
+            <tr style="background-color: #e8e8e8;">
+                <td colspan="4" style="text-align:right;"><strong>Subtotal for {{ entry.product.name }}:</strong></td>
+                <td><strong>₹{{ entry.product_total }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+{% endfor %}
+
+<hr>
+<h2>🎯 Overall Grand Total: ₹{{ grand_total }}</h2>
+
+<a href="{% url 'product_list' %}" class="btn">← Back to Product List</a>
+{% endblock %}
+
+
+{% comment %} {% extends 'bom_app/base.html' %}
+
+{% load static %}
+{% load bom_extras %}
+
+{% block content %}
+<h2>Selected Product Details</h2>
+
+<button class="btn" onclick="window.print()">🖨️ Print</button>
+
+
+{% for product in products %}
+    <h3>{{ product.name }}</h3>
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        {% for item in product.bom_items.all %}
+        <tr>
+            <td>{{ item.item_name }}</td>
+            <td>
+                {{ item.get_item_type_display }}
+                {% if item.item_type == 'other' and item.custom_item_type %}
+                    ({{ item.custom_item_type }})
+                {% endif %}
+            </td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ item.price }}</td>
+            <td>₹{{ item.quantity|multiply:item.price }}</td>
+        </tr>
+        
+        {% endfor %}
+        <h3>🧾 The Grand Total of {{ product.name }}: ₹{{ grand_total }}</h3>
+    </table>
+    <br>
+{% endfor %}
+
+<h3>🧾 The Total of selected products with their BOM is: ₹{{ grand_total }}</h3>
+<a href="{% url 'product_list' %}" class="btn secondary">⬅ Back to List</a>
+{% endblock %} {% endcomment %}

@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}BOM System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <ul>
+            <li><a href="{% url 'product_list' %}">Home</a></li>
+            <li><a href="{% url 'add_product' %}">Add Product</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        {% block content %}
+        
+
+        {% endblock %}
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
